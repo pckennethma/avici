@@ -14,21 +14,29 @@ class PrintMixin:
 
 class AbstractSignatureChecker(ABCMeta):
     """
-    Meta class for strictly enforcig signatures of @abstractmethod's in an abstract base class
-    https://stackoverflow.com/a/55315285
+    Meta class for strictly enforcing signatures of @abstractmethod's in an abstract base class
     """
     def __init__(cls, name, bases, attrs):
         errors = []
         for base_cls in bases:
             for meth_name in getattr(base_cls, "__abstractmethods__", ()):
-                orig_argspec = inspect.getfullargspec(getattr(base_cls, meth_name))
-                target_argspec = inspect.getfullargspec(getattr(cls, meth_name))
-                if orig_argspec != target_argspec:
+                orig_sig = inspect.signature(getattr(base_cls, meth_name))
+                target_sig = inspect.signature(getattr(cls, meth_name))
+                # remove annotations from both
+                orig_sig = orig_sig.replace(parameters=[
+                    param.replace(annotation=param.empty) for param in orig_sig.parameters.values()
+                ], return_annotation=orig_sig.empty)
+                target_sig = target_sig.replace(parameters=[
+                    param.replace(annotation=param.empty) for param in target_sig.parameters.values()
+                ], return_annotation=target_sig.empty)
+
+                if orig_sig != target_sig:
                     errors.append(
                         f"Subclass `{cls.__name__}` of `{base_cls.__name__}` not implemented with correct signature "
                         f"in abstract method {meth_name!r}.\n"
-                        f"Expected: {orig_argspec}\n"
-                        f"Got: {target_argspec}\n")
+                        f"Expected: {orig_sig}\n"
+                        f"Got: {target_sig}\n"
+                    )
         if errors:
             raise TypeError("\n".join(errors))
         super().__init__(name, bases, attrs)

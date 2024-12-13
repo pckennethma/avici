@@ -1,11 +1,14 @@
 from pathlib import Path
 import numpy as onp
-
+import logging
 from avici.definitions import PROJECT_DIR
 from avici.utils.parse import load_data_config
 from avici.buffer import Sampler
 from avici.utils.data import onp_standardize_data
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)  # Set to DEBUG to capture all logs
+logger = logging.getLogger(__name__)
 
 def simulate_data( d, n, *, n_interv=0, seed=0, domain=None, path=None, module_paths=None):
     """
@@ -24,6 +27,7 @@ def simulate_data( d, n, *, n_interv=0, seed=0, domain=None, path=None, module_p
             `rff-gauss-heterosked`,
             `rff-laplace-cauchy`,
             `gene-ecoli`
+            `lin-gauss-ldp`
             (all `.yaml` file names inside `avici.config.examples`).
             Only one of `domain` and `path` must be specified.
         path (str): path to YAML domain configuration, like the examples in `avici.config`
@@ -71,3 +75,33 @@ def simulate_data( d, n, *, n_interv=0, seed=0, domain=None, path=None, module_p
         return data["g"].astype(int), x[..., 0], x[..., 1]
     else:
         return data["g"].astype(int), x[..., 0], None
+
+def simulate_ldp_data(d, n, *, n_interv=0, seed=0, domain=None, path=None, module_paths=None, epsilon=1.0, delta=1e-5):
+    """
+    Simulate data and add independent Gaussian noise to each variable for LDP.
+    """
+    # Call the existing simulate_data function
+    g, x_obs, x_int = simulate_data(
+        d, n, n_interv=n_interv, seed=seed, domain=domain, path=path, module_paths=module_paths
+    )
+
+    # Initialize RNG
+    rng = onp.random.default_rng(onp.random.SeedSequence(entropy=seed))
+
+    # Compute the noise scale based on epsilon and delta under the Gaussian mechanism
+    sensitivity = 1  # Assuming L2 sensitivity is 1
+    noise_scale = onp.sqrt(2 * onp.log(1.25 / delta)) * sensitivity / epsilon
+
+    # Clip data into -0.5 to 0.5 to satisfy sensitivity=1 by using sigmoid(x) - 0.5
+    x_obs = onp.clip(1 / (1 + onp.exp(-x_obs)) - 0.5, -0.5, 0.5)
+
+    logger.info(f"d: {d}")
+    logger.info(f"epsilon: {epsilon}")
+    logger.info(f"delta: {delta}")
+    logger.info(f"Noise scale: {noise_scale}")
+
+    # Add Gaussian noise to observational data
+    x_obs += rng.normal(loc=0.0, scale=noise_scale, size=x_obs.shape)
+
+    # Return only the necessary values
+    return g, x_obs, x_int

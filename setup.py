@@ -24,7 +24,7 @@ setup(
     install_requires=[
         'jax>=0.3.17',
         'jaxlib>=0.3.14',
-        'tensorflow==2.9.1',
+        'tensorflow>=2.9.1',
         'imageio',
         'jupyter',
         'matplotlib',
@@ -36,7 +36,7 @@ setup(
         'dm-haiku>=0.0.8',
         'psutil',
         'optax',
-        'pyarrow==7.0.0',
+        'pyarrow>=7.0.0',
         'tensorflow-datasets~=4.3.0',
         'deepdiff',
         'huggingface-hub',

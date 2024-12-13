@@ -158,13 +158,13 @@ def evaluate(model, state, ds, step, detailed_log=False, log_metrics=("auprc", "
             # compute averages and log scalars to df
             scalars_ave_stratified = {i: retrieve_ave(aux) for i, aux in scalars_aux_stratified.items()}
             for n, scalars_ave in scalars_ave_stratified.items():
-                df = df.append({
+                df = pd.concat([df, pd.DataFrame([{
                     **scalars_ave,
                     "descr": descr,
                     "d": n_vars,
                     "n": n,
                     "eval_time": eval_time,
-                }, ignore_index=True)
+                }])], ignore_index=True)
 
 
     # collect results for max number of observations

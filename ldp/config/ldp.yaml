@@ -1,0 +1,46 @@
+---
+train_n_vars: [20]
+test_n_vars: [20]
+test_n_datasets: 10
+additional_modules:
+  - "./ldp_mechanism.py"
+data:
+  - n_observations_obs: 300
+    n_observations_int: 0
+
+    graph:
+      - __class__: ErdosRenyi
+        edges_per_var: [ 1.0, 2.0, 3.0 ]
+
+    mechanism:
+      - __class__: GaussianLDP
+
+        epsilon: 1
+        delta: 0.0001
+        clipping_scheme: constant
+        base_mechanism:
+          - __class__: LinearAdditive
+
+            param:
+              - __class__: SignedUniform
+                low: 1.0
+                high: 3.0
+
+            bias:
+              - __class__: Uniform
+                low: -3.0
+                high: 3.0
+
+            noise:
+              - __class__: Gaussian
+
+            noise_scale:
+              - __class__: Uniform
+                low: 0.2
+                high: 2.0
+
+            n_interv_vars: 0
+            interv_dist:
+              - __class__: SignedUniform
+                low:  1.0
+                high: 5.0
