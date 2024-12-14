@@ -1,5 +1,6 @@
 import numpy as onp
 from sklearn import metrics as sklearn_metrics
+import jax.numpy as jnp
 
 
 def shd(g, h):
@@ -57,6 +58,8 @@ def classification_metrics(true, pred):
         true:  [...]
         pred:  [...]
     """
+    if not isinstance(pred, onp.ndarray):
+        pred = onp.array(pred)
     true_flat = true.reshape(-1)
     pred_flat = pred.reshape(-1)
 

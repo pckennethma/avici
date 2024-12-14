@@ -45,9 +45,9 @@ def make_parser():
                         help="Flag for testing that sets network and training to minimal size")
 
     # data and buffer
-    parser.add_argument("--train_n_obs", default=150, type=int,
+    parser.add_argument("--train_n_obs", default=300, type=int,
                         help="Number of observational data points in training datasets")
-    parser.add_argument("--train_n_int", default=50, type=int,
+    parser.add_argument("--train_n_int", default=0, type=int,
                         help="Number of interventional data points in training datasets")
     parser.add_argument("--p_obs_only", default=0.5, type=float,
                         help="Probability of only sampling `n_obs + n_int` observational data points in a given "
@@ -81,7 +81,7 @@ def make_parser():
                         help="Whether to mask diagonal (self-loops) in predicted probabilities")
 
     # optimizer
-    parser.add_argument("--n_steps", default=300000, type=int, help="Number of primal update steps")
+    parser.add_argument("--n_steps", default=50_000, type=int, help="Number of primal update steps")
     parser.add_argument("--bsu", default=300, type=int,
                         help="Unit for estimating adequate batch sizes for the different training `n_vars`. "
                              "The batch size for a given `n_vars` is estimated roughly as `bsu` / `n_vars`, "

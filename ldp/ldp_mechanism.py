@@ -3,6 +3,11 @@ from enum import Enum
 from avici.synthetic import GraphModel, MechanismModel
 from avici.synthetic import Data
 
+def sigmoid(x):
+    x = onp.clip(x, -500, 500)  # Clamp input range
+    return onp.where(x >= 0,
+        1 / (1 + onp.exp(-x)),
+        onp.exp(x) / (1 + onp.exp(x)))
 
 class ClippingScheme(str, Enum):
     CONSTANT = "constant" # clip to [-0.5, 0.5]
@@ -31,7 +36,7 @@ class GaussianLDP(MechanismModel):
             x_obs = onp.clip(x_obs, -0.5, 0.5)
             sensitivity = 1
         elif self.clipping_scheme == ClippingScheme.SIGMOID:
-            x_obs = onp.clip(onp.sigmoid(x_obs) - 0.5, -0.5, 0.5)
+            x_obs = sigmoid(x_obs) - 0.5
             sensitivity = 1
         else:
             raise ValueError(f"Invalid clipping scheme: {self.clipping_scheme}")
