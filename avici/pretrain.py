@@ -188,7 +188,7 @@ def load_pretrained(download=None, force_download=False, checkpoint_dir=None, ca
         assert root_path.is_dir(), "The provided checkpoint_dir is not a directory. You should specify the path to " \
                                     f"a folder that contains the model `.pkl` (and `{CHECKPOINT_KWARGS}`), " \
                                     "not the path to the `.pkl` alone."
-        assert (root_path.parent / CHECKPOINT_KWARGS).exists(), f"The provided checkpoint_dir `{checkpoint_dir}` " \
+        assert (root_path / CHECKPOINT_KWARGS).exists(), f"The provided checkpoint_dir `{checkpoint_dir}` " \
                                     f"does not contain the file `{CHECKPOINT_KWARGS}`, which is required. "
         print(f"Loading local checkpoint from `{root_path}`")
 

@@ -3,7 +3,7 @@ train_n_vars: [20]
 test_n_vars: [20]
 test_n_datasets: 10
 additional_modules:
-  - "./ldp_mechanism.py"
+  - "./ldp/ldp_mechanism.py"
 data:
   - n_observations_obs: 300
     n_observations_int: 0
@@ -15,9 +15,9 @@ data:
     mechanism:
       - __class__: GaussianLDP
 
-        epsilon: 1
-        delta: 0.0001
-        clipping_scheme: constant
+        epsilon: 100
+        delta: 0.003
+        clipping_scheme: sigmoid
         base_mechanism:
           - __class__: LinearAdditive
 

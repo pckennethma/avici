@@ -90,10 +90,11 @@ def simulate_ldp_data(d, n, *, n_interv=0, seed=0, domain=None, path=None, modul
 
     # Compute the noise scale based on epsilon and delta under the Gaussian mechanism
     sensitivity = 1  # Assuming L2 sensitivity is 1
+    x_obs = onp.clip(x_obs, -0.5, 0.5)
     noise_scale = onp.sqrt(2 * onp.log(1.25 / delta)) * sensitivity / epsilon
 
     # Clip data into -0.5 to 0.5 to satisfy sensitivity=1 by using sigmoid(x) - 0.5
-    x_obs = onp.clip(1 / (1 + onp.exp(-x_obs)) - 0.5, -0.5, 0.5)
+    x_obs += rng.normal(loc=0.0, scale=noise_scale, size=x_obs.shape)
 
     logger.info(f"d: {d}")
     logger.info(f"epsilon: {epsilon}")
