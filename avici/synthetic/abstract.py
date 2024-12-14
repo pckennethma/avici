@@ -83,7 +83,7 @@ class MechanismModel(PrintMixin, metaclass=AbstractSignatureChecker):
     Abstract base class for data-generating mechanism p(D|G)
     """
     @abstractmethod
-    def __call__(self, rng, g, n_observations_obs, n_observations_int):
+    def __call__(self, rng, g, n_observations_obs, n_observations_int) -> 'Data':
         """
 
         Args:
