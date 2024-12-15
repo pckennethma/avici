@@ -1,3 +1,5 @@
+import numpy as onp
+
 from avici.synthetic import Distribution
 
 
@@ -61,3 +63,13 @@ class Beta(Distribution):
 
     def __call__(self, rng, shape=None):
         return rng.beta(self.a, self.b, size=shape)
+
+class Constant(Distribution):
+    def __init__(self, val):
+        self.val = val
+
+    def __call__(self, rng, shape=None):
+        if shape is None:  # If no shape is provided, return a scalar
+            return onp.array(self.val)
+        else:  # If a shape is provided, return an array filled with the constant value
+            return onp.full(shape, self.val)
